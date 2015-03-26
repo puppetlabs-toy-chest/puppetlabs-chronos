@@ -26,6 +26,8 @@ Puppet::Type.type(:chronos_job).provide(:default) do
       response = HTTParty.post("#{resource[:host]}/#{job_type}", job)
     rescue HTTParty::Error
       raise Puppet::Error, "Error while connecting to Chronos host #{resource[:host]}"
+    rescue HTTParty::ResponseError => e
+      raise Puppet::Error, "Failed to create Chronos job with HTTP error : #{e}"
     end
   end
 
@@ -34,6 +36,8 @@ Puppet::Type.type(:chronos_job).provide(:default) do
       response = HTTParty.delete("#{resource[:host]}/job/#{resource[:name]}")
     rescue HTTParty::Error
       raise Puppet::Error, "Error while connecting to Chronos host #{resource[:host]}"
+    rescue HTTParty::ResponseError => e
+      raise Puppet::Error, "Failed to delete Chronos job with HTTP error : #{e}"
     end
   end
 end
