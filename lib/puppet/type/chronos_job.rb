@@ -80,6 +80,33 @@ Puppet::Type.newtype(:chronos_job) do
       end
     end
 
+    newparam(:cpus) do
+      desc "Amount of cpu shares to allocate to a job."
+      validate do |val|
+        unless val.is_a? Float
+          raise ArgumentError, "cpus parameter must be a Float, got value of type #{val.class}"
+        end
+      end
+    end
+
+    newparam(:disk) do
+      desc "Amount of disk to allocate to a job."
+      validate do |val|
+        unless val.is_a? Fixnum
+          raise ArgumentError, "cpus parameter must be a Fixnum, got value of type #{val.class}"
+        end
+      end
+    end
+
+    newparam(:mem) do
+      desc "Amount of disk to allocate to a job."
+      validate do |val|
+        unless val.is_a? Fixnum
+          raise ArgumentError, "cpus parameter must be a Fixnum, got value of type #{val.class}"
+        end
+      end
+    end
+
     autorequire(:chronos_job) do
       parent_jobs = self[:parents]
     end
