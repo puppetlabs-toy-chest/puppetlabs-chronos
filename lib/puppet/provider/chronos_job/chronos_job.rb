@@ -9,6 +9,7 @@ Puppet::Type.type(:chronos_job).provide(:default) do
     "name" => resource[:name],
     "async" =>  resource[:async],
     "command" => resource[:command],
+    "environmentVariables" => resource[:environment_variables],
     "epsilon" => resource[:epsilon],
     "owner" => resource[:owner],
     "retries" => resource[:retries],
