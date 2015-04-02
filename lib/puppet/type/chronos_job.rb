@@ -22,6 +22,16 @@ Puppet::Type.newtype(:chronos_job) do
         end
     end
 
+    newparam(:environment_variables) do
+        desc "Optionally create parent Chronos jobs."
+        validate do |val|
+          unless val.is_a? Array
+            raise ArgumentError, "environment_variables parameter must be an Array, got value of type #{val.class}"
+          end
+        end
+    end
+
+
     newparam(:job_schedule) do
         desc "The scheduling for the job, in ISO8601 format."
         validate do |val|
@@ -82,6 +92,7 @@ Puppet::Type.newtype(:chronos_job) do
 
     newparam(:cpus) do
       desc "Amount of cpu shares to allocate to a job."
+      defaultto 0.1
       validate do |val|
         unless val.is_a? Float
           raise ArgumentError, "cpus parameter must be a Float, got value of type #{val.class}"
@@ -91,6 +102,7 @@ Puppet::Type.newtype(:chronos_job) do
 
     newparam(:disk) do
       desc "Amount of disk to allocate to a job."
+      defaultto 256
       validate do |val|
         unless val.is_a? Fixnum
           raise ArgumentError, "cpus parameter must be a Fixnum, got value of type #{val.class}"
@@ -100,6 +112,7 @@ Puppet::Type.newtype(:chronos_job) do
 
     newparam(:mem) do
       desc "Amount of disk to allocate to a job."
+      defaultto 64
       validate do |val|
         unless val.is_a? Fixnum
           raise ArgumentError, "cpus parameter must be a Fixnum, got value of type #{val.class}"
