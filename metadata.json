@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "author": "puppetlabs",
   "summary": "Puppet types for managing Chronos jobs",
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "source": "https://github.com/puppetlabs/puppetlabs-chronos",
   "project_page": "https://github.com/puppetlabs/puppetlabs-chronos",
   "issues_url": "https://github.com/puppetlabs/puppetlabs-chronos/issues",
