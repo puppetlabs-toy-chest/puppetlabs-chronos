@@ -3,6 +3,41 @@ require 'json'
 Puppet::Type.type(:chronos_job).provide(:default) do
 
   desc "Implements creating Chronos jobs through its REST api."
+  mk_resource_methods
+
+  def self.instances
+    begin
+      response = HTTParty.get("http://localhost:4400/scheduler/jobs")
+      job_hash = JSON.parse(response.body)
+    rescue HTTParty::Error
+      raise Puppet::Error, "Error while connecting to Chronos host #{resource[:host]}"
+    end
+
+    job_hash.each do |job|
+      job = {
+        :name => job[:name],
+        :async =>  job[:async],
+        :command => job[:command],
+        :environment_variables => job[:environmentVariables],
+        :epsilon => job[:epsilon],
+        :owner => job[:owner],
+        :retries => job[:retries],
+        :cpus => job[:cpus],
+        :disk => job[:disk],
+        :mem => job[:mem],
+      }
+      instances << new(job)
+    end
+    instances
+  end
+
+  def self.prefetch(resources)
+    instances.each do |prov|
+      if res = resources[prov.name.to_s]
+        res.provider = prov
+      end
+    end
+  end
 
   def create
     job = {
@@ -42,18 +77,7 @@ Puppet::Type.type(:chronos_job).provide(:default) do
   end
 
   def exists?
-    begin
-      response = HTTParty.get("#{resource[:host]}/scheduler/jobs")
-      body = JSON.parse(response.body)
-      body.each do |job|
-        if resource[:name] == job['name']
-          return true
-        end
-      end
-      return false
-    rescue HTTParty::Error
-      raise Puppet::Error, "Error while connecting to Chronos host #{resource[:host]}"
-    end
+    @property_hash[:ensure] == :present
   end
 
   def destroy
