@@ -1,3 +1,7 @@
+# puppetlabs-chronos
+
+[![Build Status](https://travis-ci.org/puppetlabs/puppetlabs-chronos.svg)](https://travis-ci.org/puppetlabs/puppetlabs-chronos)
+
 #### Table of Contents
 
 1. [Overview](#overview)
