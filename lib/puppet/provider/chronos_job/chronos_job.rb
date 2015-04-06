@@ -47,7 +47,7 @@ Puppet::Type.type(:chronos_job).provide(:default) do
           :name                  => job['name'],
           :async                 => job['async'],
           :command               => job['command'],
-          :environment_variables => jog['environmentVariables'],
+          :environment_variables => job['environmentVariables'],
           :epsilon               => job['epsilon'],
           :owner                 => job['owner'],
           :retries               => job['retries'],
@@ -113,11 +113,12 @@ Puppet::Type.type(:chronos_job).provide(:default) do
 
   def destroy
     begin
-      response = HTTParty.delete("#{resource[:host]}/scheduler/job/#{resource[:name]}")
+      response = HTTParty.delete("#{resource[:host]}/scheduler/job/#{@property_hash[:name]}")
     rescue HTTParty::Error
       raise Puppet::Error, "Error while connecting to Chronos host #{resource[:host]}"
     rescue HTTParty::ResponseError => e
       raise Puppet::Error, "Failed to delete Chronos job with HTTP error : #{e}"
     end
+    @property_hash[:ensure] = :absent
   end
 end
