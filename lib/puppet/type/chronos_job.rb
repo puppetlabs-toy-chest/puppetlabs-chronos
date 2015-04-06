@@ -23,6 +23,34 @@ Puppet::Type.newtype(:chronos_job) do
     end
   end
 
+  newproperty(:arguments) do
+    desc "The command to execute in the job."
+    validate do |val|
+      unless val.is_a? Array
+        raise ArgumentError, "epsilon parameter must be a String, got value of type #{val.class}"
+      end
+    end
+  end
+
+  newproperty(:uris) do
+    desc "The command to execute in the job."
+    validate do |val|
+      unless val.is_a? Array
+        raise ArgumentError, "epsilon parameter must be a String, got value of type #{val.class}"
+      end
+    end
+  end
+
+  newproperty(:container) do
+    desc "The command to execute in the job."
+    validate do |val|
+      unless val.is_a? Hash
+        raise ArgumentError, "epsilon parameter must be a String, got value of type #{val.class}"
+      end
+    end
+  end
+
+
   newproperty(:environment_variables) do
     desc "Optionally create parent Chronos jobs."
     validate do |val|
