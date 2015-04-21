@@ -47,6 +47,9 @@ Puppet::Type.type(:chronos_job).provide(:default) do
           :name                  => job['name'],
           :async                 => job['async'],
           :command               => job['command'],
+          :arguments             => job['arguments'],
+          :uris                  => job['uris'],
+          :container             => job['container'],
           :environment_variables => job['environmentVariables'],
           :epsilon               => job['epsilon'],
           :owner                 => job['owner'],
@@ -55,6 +58,7 @@ Puppet::Type.type(:chronos_job).provide(:default) do
           :disk                  => job['disk'],
           :mem                   => job['mem']
         }
+
 
         instances << new(job)
       end
@@ -68,6 +72,13 @@ Puppet::Type.type(:chronos_job).provide(:default) do
         res.provider = prov
       end
     end
+  end
+
+  def flush
+    if @property_flush
+      create
+    end
+    @property_hash = resource.to_hash
   end
 
   def create

@@ -9,17 +9,12 @@ describe 'chronos' do
         end
 
         context "chronos class without any parameters" do
-          let(:params) {{ }}
+          let(:params) {{ :manage_package_deps => true }}
 
           it { is_expected.to compile.with_all_deps }
-
+          it { is_expected.to contain_package('httparty').with_ensure('present') }
+          it { is_expected.to contain_package('json').with_ensure('present') }
           it { is_expected.to contain_class('chronos::params') }
-          it { is_expected.to contain_class('chronos::install').that_comes_before('chronos::config') }
-          it { is_expected.to contain_class('chronos::config') }
-          it { is_expected.to contain_class('chronos::service').that_subscribes_to('chronos::config') }
-
-          it { is_expected.to contain_service('chronos') }
-          it { is_expected.to contain_package('chronos').with_ensure('present') }
         end
       end
     end

@@ -10,12 +10,19 @@
 class chronos (
   $package_name = $::chronos::params::package_name,
   $service_name = $::chronos::params::service_name,
+  $manage_package_deps = false,
 ) inherits ::chronos::params {
 
   # validate parameters here
 
-  class { '::chronos::install': } ->
-  class { '::chronos::config': } ~>
-  class { '::chronos::service': } ->
-  Class['::chronos']
+ if $manage_package_deps {
+  package { 'httparty':
+    ensure   => present,
+    provider => 'pe-gem',
+  }
+  package { 'json':
+    ensure   => present,
+    provider => 'pe-gem',
+  }
+ }
 }
