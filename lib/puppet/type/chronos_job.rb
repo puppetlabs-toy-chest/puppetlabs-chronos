@@ -16,6 +16,7 @@ Puppet::Type.newtype(:chronos_job) do
 
   newproperty(:command) do
     desc "The command to execute in the job."
+
     validate do |val|
       unless val.is_a? String
         raise ArgumentError, "command parameter must be a String, got value of type #{val.class}"
@@ -26,33 +27,26 @@ Puppet::Type.newtype(:chronos_job) do
   newproperty(:arguments, :array_matching => :all) do
     desc "Arguments that will be passed to the command"
 
-    munge do |val|
-      val.to_a.each do |item|
-        unless item.is_a? String
-          raise ArgumentError, "arguments parameter must be a collection or Strings, got value of type #{item.class}"
-        end
+    validate do |val|
+      unless val.is_a? String
+        raise ArgumentError, "arguments parameter must be a collection or Strings, got value of type #{val.class}"
       end
-      val.to_a
     end
-
   end
 
   newproperty(:uris, :array_matching => :all) do
     desc "A list of URIs that Mesos downloads when the Chronos job starts"
 
-    munge do |val|
-      val.to_a.each do |item|
-        unless item.is_a? String
-          raise ArgumentError, "uris parameter must be a collection or Strings, got value of type #{item.class}"
-        end
+    validate do |val|
+      unless val.is_a? String
+        raise ArgumentError, "uris parameter must be a collection or Strings, got value of type #{val.class}"
       end
-      val.to_a
     end
-
   end
 
   newproperty(:container) do
     desc "The subfields that contain data needed to run the job in a container"
+
     validate do |val|
       unless val.is_a? Hash
         raise ArgumentError, "container parameter must be a Hash, got value of type #{val.class}"
@@ -62,15 +56,17 @@ Puppet::Type.newtype(:chronos_job) do
 
   newproperty(:environment_variables) do
     desc "Environments variables set for job"
+
     validate do |val|
-      unless val.is_a? Hash
-        raise ArgumentError, "environment_variables parameter must be a Hash, got value of type #{val.class}"
+      if val.is_a?(Hash) && val.has_key?('name') && val.has_key?('value')
+        raise ArgumentError, 'detected environment_variables parameter with keys "name" and "value". The chronos_job type does not support the Chronos API way of setting environment variables, sending an array of hashes. The chronos_job type expects a hash of { NAME => VALUE }'
       end
     end
- end
+  end
 
   newproperty(:job_schedule) do
     desc "The scheduling for the job, in ISO8601 format."
+
     validate do |val|
       unless val.is_a? String
         raise ArgumentError, "job_schedule parameter must be a String, got value of type #{val.class}"
@@ -80,7 +76,9 @@ Puppet::Type.newtype(:chronos_job) do
 
   newproperty(:schedule_timezone) do
     desc "The time zone name to use when scheduling the job."
+
     defaultto 'UTC'
+
     validate do |val|
       unless val.is_a? String
         raise ArgumentError, "schedule_timezone parameter must be a String, got value of type #{val.class}"
@@ -90,6 +88,7 @@ Puppet::Type.newtype(:chronos_job) do
 
   newproperty(:epsilon) do
     desc "The interval to run the job on, in ISO8601 duration format."
+
     validate do |val|
       unless val.is_a? String
         raise ArgumentError, "epsilon parameter must be a String, got value of type #{val.class}"
@@ -117,11 +116,10 @@ Puppet::Type.newtype(:chronos_job) do
     end
 
     validate do |val|
-      unless (val.is_a?(String) || val.is_a?(Array))
+      unless val.is_a? String
         raise ArgumentError, "owner parameter must be a String or Array of Strings, got value of type #{val.class}"
       end
     end
-
   end
 
   newproperty(:async, :boolean => true, :parent => Puppet::Property::Boolean) do
@@ -131,19 +129,16 @@ Puppet::Type.newtype(:chronos_job) do
   newproperty(:parents, :array_matching => :all) do
     desc "Optionally associate with parent Chronos job(s)."
 
-    munge do |val|
-      val.to_a.each do |item|
-        unless item.is_a? String
-          raise ArgumentError, "parents parameter must be a collection or Strings, got value of type #{item.class}"
-        end
+    validate do |val|
+      unless val.is_a? String
+        raise ArgumentError, "parents parameter must be a String or Array of Strings, got value of type #{val.class}"
       end
-      val.to_a
     end
-
   end
 
   newproperty(:retries) do
     desc "Number of times to retry job execution after a failure."
+
     validate do |val|
       unless val.is_a? Fixnum
         raise ArgumentError, "retries parameter must be a Fixnum, got value of type #{val.class}"
@@ -153,7 +148,9 @@ Puppet::Type.newtype(:chronos_job) do
 
   newproperty(:cpus) do
     desc "Amount of cpu shares to allocate to a job."
+
     defaultto 0.1
+
     validate do |val|
       unless (val.is_a?(Float) || val.is_a?(Fixnum))
         raise ArgumentError, "cpus parameter must be a Float or Fixnum, got value of type #{val.class}"
@@ -163,7 +160,9 @@ Puppet::Type.newtype(:chronos_job) do
 
   newproperty(:disk) do
     desc "Amount of disk to allocate to a job."
+
     defaultto 256
+
     validate do |val|
       unless (val.is_a?(Float) || val.is_a?(Fixnum))
         raise ArgumentError, "disk parameter must be a Float or Fixnum, got value of type #{val.class}"
@@ -173,7 +172,9 @@ Puppet::Type.newtype(:chronos_job) do
 
   newproperty(:mem) do
     desc "Amount of disk to allocate to a job."
+
     defaultto 64
+
     validate do |val|
       unless (val.is_a?(Float) || val.is_a?(Fixnum))
         raise ArgumentError, "mem parameter must be a FLoat or Fixnum, got value of type #{val.class}"
@@ -187,7 +188,7 @@ Puppet::Type.newtype(:chronos_job) do
     end
 
     if (self[:schedule] && self[:parents])
-      raise ArgumentError, "Parameter schedule and parents are mutually exclusive, they define the Chronos job type, scheduled or dependent"
+      raise ArgumentError, "schedule and parents parameters are mutually exclusive, they define the Chronos job type, scheduled or dependent"
     end
   end
 
