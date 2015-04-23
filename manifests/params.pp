@@ -8,10 +8,18 @@ class chronos::params {
     'Debian': {
       $package_name = 'chronos'
       $service_name = 'chronos'
+      $provider = $::puppetversion ? {
+        /.*Enterprise.*/ => 'pe-gem',
+        default => 'gem',
+      }
     }
     'RedHat', 'Amazon': {
       $package_name = 'chronos'
       $service_name = 'chronos'
+      $provider = $::puppetversion ? {
+        /.*Enterprise.*/ => 'pe-gem',
+        default => 'gem',
+      }
     }
     default: {
       fail("${::operatingsystem} not supported")
