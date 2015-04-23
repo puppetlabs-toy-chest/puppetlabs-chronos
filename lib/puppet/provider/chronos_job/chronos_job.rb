@@ -19,8 +19,6 @@ Puppet::Type.type(:chronos_job).provide(:default) do
 
   def self.targets(resources = nil)
     targets = []
-    # First get the default target
-    targets << self.default_target
 
     if resources
       resources.each do |name, resource|
@@ -28,6 +26,8 @@ Puppet::Type.type(:chronos_job).provide(:default) do
           targets << value
         end
       end
+    else
+      targets << self.default_target
     end
 
     targets.uniq.compact
@@ -45,20 +45,30 @@ Puppet::Type.type(:chronos_job).provide(:default) do
       jobs.each do |job|
         job = {
           :name                  => job['name'],
-          :async                 => job['async'],
           :command               => job['command'],
           :arguments             => job['arguments'],
           :uris                  => job['uris'],
           :container             => job['container'],
           :environment_variables => job['environmentVariables'],
+          :job_schedule          => job['schedule'],
+          :schedule_timezone     => job['scheduleTimeZone'],
           :epsilon               => job['epsilon'],
-          :owner                 => job['owner'],
+          :owner                 => job['owner'].split(','),
+          :async                 => job['async'],
+          :parents               => job['parents'],
           :retries               => job['retries'],
           :cpus                  => job['cpus'],
           :disk                  => job['disk'],
-          :mem                   => job['mem']
+          :mem                   => job['mem'],
         }
 
+        job.delete_if do |k,v|
+          if (v.is_a?(Array) || v.is_a?(Hash))
+            v.empty?
+          else
+            v.nil?
+          end
+        end
 
         instances << new(job)
       end
@@ -75,7 +85,7 @@ Puppet::Type.type(:chronos_job).provide(:default) do
   end
 
   def flush
-    if @property_flush
+    if ! @property_hash.empty? && @property_hash[:ensure] != :absent
       create
     end
     @property_hash = resource.to_hash
@@ -84,30 +94,37 @@ Puppet::Type.type(:chronos_job).provide(:default) do
   def create
     job = {
       'name'                 => resource[:name],
-      'async'                => resource[:async],
       'command'              => resource[:command],
-      'environmentVariables' => resource[:environment_variables],
-      'epsilon'              => resource[:epsilon],
-      'owner'                => resource[:owner],
-      'retries'              => resource[:retries],
+      'owner'                => resource[:owner].join(','),
       'cpus'                 => resource[:cpus],
       'disk'                 => resource[:disk],
       'mem'                  => resource[:mem],
+      'arguments'            => resource[:arguments],
+      'uris'                 => resource[:uris],
+      'container'            => resource[:container],
+      'environmentVariables' => resource[:environment_variables],
+      'epsilon'              => resource[:epsilon],
+      'async'                => resource[:async],
+      'parents'              => resource[:parents],
+      'retries'              => resource[:retries],
+      'schedule'             => resource[:job_schedule],
+      'scheduleTimeZone'     => resource[:schedule_timezone],
+      'parents'              => resource[:parents]
     }
+
+    job.delete_if do |k,v|
+      if (v.is_a?(Array) || v.is_a?(Hash))
+        v.empty?
+      else
+        v.nil?
+      end
+    end
 
     headers = {
       "Content-Type" => "application/json"
     }
-    if resource[:parents] == nil
-      job_type_endpoint = "scheduler/iso8601"
-      job[:schedule] = resource[:job_schedule]
-      if resource[:schedule_timezone]
-        job[:scheduleTimeZone] = resource[:schedule_timezone]
-      end
-    else
-      job_type_endpoint = "scheduler/dependency"
-      job[:parents] = resource[:parents]
-    end
+
+    job_type_endpoint = resource[:parents].nil? ? 'scheduler/iso8601' : 'scheduler/dependency'
 
     begin
       response = HTTParty.post("#{resource[:host]}/#{job_type_endpoint}", :body => job.to_json, :headers => headers)
@@ -116,6 +133,8 @@ Puppet::Type.type(:chronos_job).provide(:default) do
     rescue HTTParty::ResponseError => e
       raise Puppet::Error, "Failed to create Chronos job with HTTP error : #{e}"
     end
+
+    @property_hash.clear
   end
 
   def exists?
