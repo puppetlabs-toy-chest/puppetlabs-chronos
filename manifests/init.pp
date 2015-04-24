@@ -15,14 +15,20 @@ class chronos (
 
   # validate parameters here
 
- if $manage_package_deps {
-  package { 'httparty':
-    ensure   => present,
-    provider => 'pe-gem',
+  if $manage_package_deps {
+    $gem_provider = $::puppetversion ? {
+      /Puppet Enterprise/ => 'pe-gem',
+      default             => 'gem',
+    }
+
+    package { 'httparty':
+      ensure   => present,
+      provider => $gem_provider,
+    }
+
+    package { 'json':
+      ensure   => present,
+      provider => $gem_provider,
+    }
   }
-  package { 'json':
-    ensure   => present,
-    provider => 'pe-gem',
-  }
- }
 }
