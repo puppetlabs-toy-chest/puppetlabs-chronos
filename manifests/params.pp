@@ -14,7 +14,7 @@ class chronos::params {
       $service_name = 'chronos'
     }
     default: {
-      fail("${::operatingsystem} not supported")
+      fail("${::osfamily} not supported")
     }
   }
 }

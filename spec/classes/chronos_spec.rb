@@ -49,7 +49,7 @@ describe 'chronos' do
         :operatingsystem => 'Nexenta',
       }}
 
-      it { expect { is_expected.to contain_package('chronos') }.to raise_error(Puppet::Error, /Nexenta not supported/) }
+      it { is_expected.to raise_error(Puppet::Error, /Solaris not supported/) }
     end
   end
 end
