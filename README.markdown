@@ -1,4 +1,5 @@
 # puppetlabs-chronos
+A Puppet module for managing Chronos.
 
 [![Build Status](https://travis-ci.org/puppetlabs/puppetlabs-chronos.svg)](https://travis-ci.org/puppetlabs/puppetlabs-chronos)
 
