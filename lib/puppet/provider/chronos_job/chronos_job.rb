@@ -62,6 +62,11 @@ Puppet::Type.type(:chronos_job).provide(:default) do
           :mem                   => job['mem'],
         }
 
+        unless job[:environment_variables].empty?
+          merged = {};job[:environment_variables].each { |x| merged.merge!({ x['name'] => x['value'] }) }
+          job[:environment_variables] = merged
+        end
+
         job.delete_if do |k,v|
           if (v.is_a?(Array) || v.is_a?(Hash))
             v.empty?
@@ -111,6 +116,11 @@ Puppet::Type.type(:chronos_job).provide(:default) do
       'scheduleTimeZone'     => resource[:schedule_timezone],
       'parents'              => resource[:parents]
     }
+
+    unless resource[:environment_variables].nil?
+      listed = [];resource[:environment_variables].each_pair { |k,v| listed << { 'name' => k, 'value' => v }}
+      job['environmentVariables'] = listed
+    end
 
     job.delete_if do |k,v|
       if (v.is_a?(Array) || v.is_a?(Hash))
