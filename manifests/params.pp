@@ -4,6 +4,13 @@
 # It sets variables according to platform.
 #
 class chronos::params {
+  $master              = false
+  $zk_hosts            = false
+
+  $conf_dir            = '/etc/chronos/conf'
+  $http_port           = '4400'
+  $manage_package_deps = true
+
   case $::osfamily {
     'Debian': {
       $package_name = 'chronos'

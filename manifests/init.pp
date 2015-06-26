@@ -1,19 +1,47 @@
 # == Class: chronos
 #
-# Full description of class chronos here.
+# Manage Chronos installation, configuration, and jobs.
 #
 # === Parameters
 #
-# [*sample_parameter*]
-#   Explanation of what this parameter affects and what it defaults to.
+# [*master*]
+#   URL to the Mesos master, e.g. 'zk://localhost:2181/mesos' (optional).
+#   Leave this blank to use the Chronos default of looking for this value at
+#   '/etc/mesos/zk'.
+#
+# [*zk_hosts*]
+#   Comma-separated list of ZooKeeper hosts for Chronos to use (optional).
+#   Leave this blank to use the Chronos default of looking for this value at
+#   '/etc/mesos/zk'.
+#
+# [*conf_dir*]
+#   The path where the Chronos config is located.
+#   Defaults to '/etc/chronos/conf'
+#
+# [*http_port*]
+#   HTTP port for Chronos to listen on. Defaults to 4400.
+#
+# [*manage_package_deps*]
+#   Whether to install the dependencies for this module, such as the 'json'
+#   and 'httparty' Ruby gems. Defaults to true.
+#
+# [*package_name*]
+#   The name of the package to install, e.g. 'chronos'
+#   The default is set in params.pp based on the operating system and release.
+#
+# [*service_name*]
+#   The name of the service to manage, e.g. 'chronos'
+#   The default is set in params.pp based on the operating system and release.
 #
 class chronos (
-  $package_name = $::chronos::params::package_name,
-  $service_name = $::chronos::params::service_name,
-  $manage_package_deps = false,
-) inherits ::chronos::params {
-
-  # validate parameters here
+  $master              = $chronos::params::master,
+  $zk_hosts            = $chronos::params::zk_hosts,
+  $conf_dir            = $chronos::params::conf_dir,
+  $http_port           = $chronos::params::http_port,
+  $manage_package_deps = $chronos::params::manage_package_deps,
+  $package_name        = $chronos::params::package_name,
+  $service_name        = $chronos::params::service_name,
+) inherits chronos::params {
 
   if $manage_package_deps {
     $gem_provider = $::puppetversion ? {
@@ -31,4 +59,9 @@ class chronos (
       provider => $gem_provider,
     }
   }
+
+  class { 'chronos::install': } ~>
+  class { 'chronos::service': }
+  contain 'chronos::install'
+  contain 'chronos::service'
 }
