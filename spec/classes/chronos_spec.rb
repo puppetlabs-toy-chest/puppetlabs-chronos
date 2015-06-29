@@ -60,6 +60,9 @@ describe 'chronos' do
             it 'should manage the chronos service' do
               should contain_service('chronos')
             end
+            it 'should not contain the hostname config file' do
+              should_not contain_file('/etc/chronos/conf/hostname')
+            end
           end
 
           context 'with mandatory params' do
@@ -104,6 +107,20 @@ describe 'chronos' do
             it do
               should contain_package('fake-chronos-package')
               should contain_service('fake-chronos-service')
+            end
+          end
+
+          context 'with a custom hostname' do
+            let(:params) do
+              params.merge!({
+                :hostname => 'fake-chronos-hostname.foo.bar.baz',
+              })
+            end
+
+            it do
+              should contain_file('/etc/chronos/conf/hostname').with(
+                'content' => 'fake-chronos-hostname.foo.bar.baz',
+              )
             end
           end
         end

@@ -7,6 +7,7 @@ class chronos::service {
 
   $conf_dir     = $chronos::params::conf_dir
   $http_port    = $chronos::http_port
+  $hostname     = $chronos::hostname
   $master       = $chronos::master
   $package_name = $chronos::package_name
   $service_name = $chronos::service_name
@@ -34,6 +35,13 @@ class chronos::service {
   file { "${conf_dir}/http_port":
     content => $http_port,
     notify  => Service[$service_name],
+  }
+
+  if $chronos::hostname {
+    file { "${conf_dir}/hostname":
+      content => $hostname,
+      notify  => Service[$service_name],
+    }
   }
 
   if $chronos::master {

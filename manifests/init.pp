@@ -21,6 +21,10 @@
 # [*http_port*]
 #   HTTP port for Chronos to listen on. Defaults to 4400.
 #
+# [*hostname*]
+#   The advertised hostname (optional). Leave this blank for Chronos to
+#   auto-populate the hostname.
+#
 # [*manage_package_deps*]
 #   Whether to install the dependencies for this module, such as the 'json'
 #   and 'httparty' Ruby gems. Defaults to true.
@@ -38,6 +42,7 @@ class chronos (
   $zk_hosts            = $chronos::params::zk_hosts,
   $conf_dir            = $chronos::params::conf_dir,
   $http_port           = $chronos::params::http_port,
+  $hostname            = $chronos::params::hostname,
   $manage_package_deps = $chronos::params::manage_package_deps,
   $package_name        = $chronos::params::package_name,
   $service_name        = $chronos::params::service_name,
