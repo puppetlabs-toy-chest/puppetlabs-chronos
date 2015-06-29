@@ -6,60 +6,70 @@ A Puppet module for managing Chronos.
 #### Table of Contents
 
 1. [Overview](#overview)
-2. [Module Description - What the module does and why it is useful](#module-description)
-3. [Setup - The basics of getting started with chronos](#setup)
-    * [What chronos affects](#what-chronos-affects)
-    * [Setup requirements](#setup-requirements)
-    * [Beginning with chronos](#beginning-with-chronos)
-4. [Usage - Configuration options and additional functionality](#usage)
-5. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
-5. [Limitations - OS compatibility, etc.](#limitations)
-6. [Development - Guide for contributing to the module](#development)
+2. [Setup - The basics of getting started with chronos](#setup)
+    * [What chronos affects](#what-puppetlabs-chronos-affects)
+3. [Usage - Configuration options and additional functionality](#usage)
+4. [Limitations - OS compatibility, etc.](#limitations)
+5. [Development - Guide for contributing to the module](#development)
 
 ## Overview
 
-A one-maybe-two sentence summary of what the module does/what problem it solves. This is your 30 second elevator pitch for your module. Consider including OS/Puppet version it works with.       
-
-## Module Description
-
-If applicable, this section should have a brief description of the technology the module integrates with and what that integration enables. This section should answer the questions: "What does this module *do*?" and "Why would I use it?"
-
-If your module has a range of functionality (installation, configuration, management, etc.) this is the time to mention it.
+This Puppet module installs the Chronos package, manages the configuration and
+service, and creates jobs using Chronos' HTTP API.
 
 ## Setup
 
-### What chronos affects
+If you're using r10k or librarian-puppet, add the following to your Puppetfile:
 
-* A list of files, packages, services, or operations that the module will alter, impact, or execute on the system it's installed on.
-* This is a great place to stick any warnings.
-* Can be in list or paragraph form. 
+```ruby
 
-### Setup Requirements **OPTIONAL**
+```
 
-If your module requires anything extra before setting up (pluginsync enabled, etc.), mention it here. 
+### What puppetlabs-chronos affects
 
-### Beginning with chronos
-
-The very basic steps needed for a user to get the module up and running. 
-
-If your most recent release breaks compatibility or requires particular steps for upgrading, you may wish to include an additional section here: Upgrading (For an example, see http://forge.puppetlabs.com/puppetlabs/firewall).
+- Manage Chronos configuration files `master`, `http_port`, and `zk_hosts`
+in `/etc/chronos/conf`
+- Install the Chronos package and ensure the service is running
+- Create jobs using the Chronos HTTP API
 
 ## Usage
 
-Put the classes, types, and resources for customizing, configuring, and doing the fancy stuff with your module here. 
+This module adds a new type and provider, `chronos_job`, that will
+automatically be copied to nodes using pluginsync.
 
-## Reference
+To install Chronos on a node, simply include the Chronos class:
 
-Here, list the classes, types, providers, facts, etc contained in your module. This section should include all of the under-the-hood workings of your module so people know what the module is touching on their system but don't need to mess with things. (We are working on automating this section!)
+```puppet
+include chronos
+```
+
+The module does allow for some customizations, but please read the "limitations"
+section below before using them.
+
+```puppet
+class { 'chronos':
+  master              => 'zk://10.1.1.1:2181,10.1.1.2:2181,10.1.1.1.3:2181/mesos',
+  zk_hosts            => '10.1.1.1:2181,10.1.1.2:2181,10.1.1.3:2181',
+  conf_dir            => '/etc/chronos/conf',
+  http_port           => '4400',
+  manage_package_deps => true,
+  package_name        => 'chronos',
+  service_name        => 'chronos',
+}
+```
 
 ## Limitations
 
-This is where you list OS compatibility, version compatibility, etc.
+  - This module will not add the Mesosphere repo to the system's package
+  manager. It is recommended that the user manage the repo in a profile, using
+  the puppetlabs/apt or stahnma/epel modules.
+  - The `chronos_job` type requires that two Ruby Gems are present on the
+  system: httparty and json. The `chronos` class will install these gems, but
+  the "ruby" and "ruby-dev" packages need to be managed separately.
+  - The `master` and `zk_hosts` params must be left blank if Chronos is
+  being installed on a machine that uses Mesos packages provided by Mesosphere.
+  For more information, see https://github.com/mesos/chronos/issues/481
 
 ## Development
 
-Since your module is awesome, other users will want to play with it. Let them know what the ground rules for contributing are.
-
-## Release Notes/Contributors/Etc **Optional**
-
-If you aren't using changelog, put your release notes here (though you should consider using changelog). You may also add any additional sections you feel are necessary or important to include here. Please use the `## ` header. 
+Please see the [contributing guidelines](CONTRIBUTING.md).
