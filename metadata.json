@@ -2,7 +2,7 @@
   "name": "puppetlabs-chronos",
   "version": "0.1.0",
   "author": "puppetlabs",
-  "summary": "A Puppet module for managing jobs in Chronos.",
+  "summary": "A Puppet module for managing Chronos.",
   "license": "Apache-2.0",
   "source": "https://github.com/puppetlabs/puppetlabs-chronos",
   "project_page": "https://github.com/puppetlabs/puppetlabs-chronos",

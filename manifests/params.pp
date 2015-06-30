@@ -4,6 +4,13 @@
 # It sets variables according to platform.
 #
 class chronos::params {
+  $hostname            = false
+  $master              = false
+  $zk_hosts            = false
+  $conf_dir            = '/etc/chronos/conf'
+  $http_port           = '4400'
+  $manage_package_deps = true
+
   case $::osfamily {
     'Debian': {
       $package_name = 'chronos'
@@ -14,7 +21,7 @@ class chronos::params {
       $service_name = 'chronos'
     }
     default: {
-      fail("${::operatingsystem} not supported")
+      fail("${::osfamily} not supported")
     }
   }
 }
