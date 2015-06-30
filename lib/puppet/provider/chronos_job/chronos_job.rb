@@ -1,13 +1,16 @@
 Puppet::Type.type(:chronos_job).provide(:default) do
-
-  # I've had issues with lazy loading of providers in the past where requirements
-  # for the provider to function are best defined inside the provider as opposed
-  # to the standard Ruby practice.  Allows for you to be able to install httparty
-  # on the same run as the provider is synced.
-  require 'httparty'
-  require 'json'
-
   desc "Implements creating Chronos jobs through its REST api."
+
+  # There's a possibility of this provider being loaded before Puppet has had
+  # a chance to manage the 'httparty' and 'json' gems. Therefore, we confine
+  # this provider to only work *if* both httparty and json can be required.
+  confine :feature => :httparty
+
+  def initialize(*args)
+    super
+    require 'httparty'
+    require 'json'
+  end
 
   mk_resource_methods
 
