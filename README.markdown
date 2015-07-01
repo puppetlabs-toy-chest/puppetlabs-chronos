@@ -22,7 +22,7 @@ service, and creates jobs using Chronos' HTTP API.
 If you're using r10k or librarian-puppet, add the following to your Puppetfile:
 
 ```ruby
-
+mod 'puppetlabs-chronos', :git => 'git://github.com/puppetlabs/puppetlabs-chronos.git', :ref => 'v0.1.0'
 ```
 
 ### What puppetlabs-chronos affects
