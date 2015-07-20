@@ -50,7 +50,7 @@ class chronos (
 
   if $manage_package_deps {
     $gem_provider = $::puppetversion ? {
-      /Puppet Enterprise/ => 'pe-gem',
+      /Puppet Enterprise/ => 'pe_gem',
       default             => 'gem',
     }
 
