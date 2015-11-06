@@ -44,8 +44,8 @@ describe 'chronos' do
               facts.merge!({:puppetversion => '3.6.2 (Puppet Enterprise 3.3.0)'})
             end
 
-            it { should contain_package('httparty').with_provider('pe-gem') }
-            it { should contain_package('json').with_provider('pe-gem') }
+            it { should contain_package('httparty').with_provider('pe_gem') }
+            it { should contain_package('json').with_provider('pe_gem') }
           end
 
           context 'with default params' do
