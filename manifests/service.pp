@@ -5,7 +5,7 @@
 class chronos::service {
   include chronos::params
 
-  $conf_dir     = $chronos::params::conf_dir
+  $conf_dir     = $chronos::conf_dir
   $http_port    = $chronos::http_port
   $hostname     = $chronos::hostname
   $master       = $chronos::master
