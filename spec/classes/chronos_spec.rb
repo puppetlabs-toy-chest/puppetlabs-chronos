@@ -24,7 +24,7 @@ describe 'chronos' do
 
         context 'with system-default service provider' do
           it { is_expected.to contain_service('chronos').with({
-            'provider' => nil
+            'provider' => 'systemd'
           }) }
         end
 
