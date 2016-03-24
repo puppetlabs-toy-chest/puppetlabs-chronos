@@ -37,6 +37,10 @@
 #   The name of the service to manage, e.g. 'chronos'
 #   The default is set in params.pp based on the operating system and release.
 #
+# [*force_provider*]
+#   Service provider to use to create/start the Chronos service.
+#   If not specified, the system default service provider is used.
+#
 class chronos (
   $master              = $chronos::params::master,
   $zk_hosts            = $chronos::params::zk_hosts,
@@ -46,6 +50,7 @@ class chronos (
   $manage_package_deps = $chronos::params::manage_package_deps,
   $package_name        = $chronos::params::package_name,
   $service_name        = $chronos::params::service_name,
+  $force_provider      = $chronos::params::force_provider,
 ) inherits chronos::params {
 
   if $manage_package_deps {

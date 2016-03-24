@@ -5,13 +5,14 @@
 class chronos::service {
   include chronos::params
 
-  $conf_dir     = $chronos::params::conf_dir
-  $http_port    = $chronos::http_port
-  $hostname     = $chronos::hostname
-  $master       = $chronos::master
-  $package_name = $chronos::package_name
-  $service_name = $chronos::service_name
-  $zk_hosts     = $chronos::zk_hosts
+  $conf_dir       = $chronos::params::conf_dir
+  $http_port      = $chronos::http_port
+  $hostname       = $chronos::hostname
+  $master         = $chronos::master
+  $package_name   = $chronos::package_name
+  $service_name   = $chronos::service_name
+  $zk_hosts       = $chronos::zk_hosts
+  $force_provider = $chronos::force_provider
 
   File {
     ensure => file,
@@ -21,8 +22,9 @@ class chronos::service {
   }
 
   service { $service_name:
-    ensure => running,
-    enable => true,
+    ensure   => running,
+    enable   => true,
+    provider => $force_provider,
   }
 
   file { $conf_dir:

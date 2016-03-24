@@ -10,6 +10,7 @@ class chronos::params {
   $conf_dir            = '/etc/chronos/conf'
   $http_port           = '4400'
   $manage_package_deps = true
+  $force_provider      = undef
 
   case $::osfamily {
     'Debian': {
