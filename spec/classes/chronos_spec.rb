@@ -29,7 +29,7 @@ describe 'chronos' do
 
           it { is_expected.to contain_service('chronos').with({
             'provider' => 'upstart'
-          })
+          }) }
         end
 
         context 'when manage_package_deps is true' do
