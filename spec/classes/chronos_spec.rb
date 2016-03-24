@@ -22,6 +22,16 @@ describe 'chronos' do
 
         it { is_expected.to compile.with_all_deps }
 
+        context 'with overridden service provider' do
+          let(:params) do
+            params.merge!({force_provider => 'upstart'})
+          end
+
+          it { is_expected.to contain_service('chronos').with({
+            'provider' => 'upstart'
+          })
+        end
+
         context 'when manage_package_deps is true' do
           let(:params) do
             params.merge!({:manage_package_deps => true})
