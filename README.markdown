@@ -58,6 +58,24 @@ class { 'chronos':
 }
 ```
 
+If you wish to override the system default provider for service management, you
+may also specify the optional `force_provider` parameter in the class
+declaration. For example, the following declaration specifies that `upstart` is
+to be used as the service provider:
+
+```puppet
+class { 'chronos':
+  master              => 'zk://10.1.1.1:2181,10.1.1.2:2181,10.1.1.1.3:2181/mesos',
+  zk_hosts            => '10.1.1.1:2181,10.1.1.2:2181,10.1.1.3:2181',
+  conf_dir            => '/etc/chronos/conf',
+  http_port           => '4400',
+  manage_package_deps => true,
+  package_name        => 'chronos',
+  service_name        => 'chronos',
+  force_provider      => 'upstart',
+}
+```
+
 ## Limitations
 
   - This module will not add the Mesosphere repo to the system's package
