@@ -24,7 +24,7 @@ describe 'chronos' do
 
         context 'with system-default service provider' do
           it { is_expected.to contain_service('chronos').with({
-            'provider' => undef
+            'provider' => nil
           }) }
         end
 
@@ -34,7 +34,7 @@ describe 'chronos' do
           end
 
           it { is_expected.to contain_service('chronos').with({
-            'provider' => 'upstart'
+            'provider' => 'systemd'
           }) }
         end
 
