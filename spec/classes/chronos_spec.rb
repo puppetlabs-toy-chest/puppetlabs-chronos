@@ -24,7 +24,7 @@ describe 'chronos' do
 
         context 'with overridden service provider' do
           let(:params) do
-            params.merge!({force_provider => 'upstart'})
+            params.merge!({ :force_provider => 'upstart' })
           end
 
           it { is_expected.to contain_service('chronos').with({
