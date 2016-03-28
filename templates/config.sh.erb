@@ -1,0 +1,25 @@
+<% if @chronos_master -%>
+# Mesos connection information
+# Master can be set either to the Zookeeper URL
+# or to the direct URL of the Mesos master
+export CHRONOS_MASTER='<%= @chronos_master %>'
+<% end -%>
+<% if @chronos_zk_hosts -%>
+# Zookeeper URL for Chronos to use for its data
+export CHRONOS_ZK_HOSTS='<%= @chronos_zk_hosts %>'
+<% end -%>
+<% if @mesos_principal and @mesos_secret -%>
+# Mesos Auth connection credentials
+# They will be used to connect to the Mesos master
+export CHRONOS_MESOS_AUTHENTICATION_PRINCIPAL='<%= @mesos_principal %>'
+export CHRONOS_MESOS_AUTHENTICATION_SECRET_FILE='<%= @secret_file_path %>'
+<% end -%>
+# You should provide the IP for libprocess to use for the Mesos master connection
+# It will be 127.0.0.1 by default and 0.0.0.0 will not work
+# Without this value set Chronos will be able to connect only to the local Mesos master
+export LIBPROCESS_IP='<%= @libprocess_ip %>'
+# Java options
+export JAVA_OPTS='<%= @java_opts -%>'
+<% if @java_home -%>
+export JAVA_HOME='<%= @java_home -%>'
+<% end -%>

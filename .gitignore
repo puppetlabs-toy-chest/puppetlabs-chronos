@@ -1,6 +1,8 @@
 .*.sw?
+.idea
+
 pkg
-spec/fixtures
+spec/fixtures/modules
 .rspec_system
 .vagrant
 .bundle

@@ -1,0 +1,24 @@
+[Unit]
+Description=Chronos
+After=network.target
+Wants=network.target
+
+[Service]
+<%=
+    exec = "ExecStart=#{@launcher_path}"
+    exec += " --jar #{@jar_file_path}" if @jar_file_path
+    exec
+%>
+Restart=on-abort
+Restart=always
+RestartSec=20
+
+<% if @run_user -%>
+User=<%= @run_user %>
+<% end-%>
+<% if @run_group -%>
+Group=<%= @run_group %>
+<% end -%>
+
+[Install]
+WantedBy=multi-user.target
