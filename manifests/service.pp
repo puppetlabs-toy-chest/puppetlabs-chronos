@@ -2,59 +2,37 @@
 #
 # Manages the Chronos service and configuration.
 #
-class chronos::service {
-  include chronos::params
+class chronos::service (
+  $service_manage   = $chronos::params::service_manage,
+  $service_enable   = $chronos::params::service_enable,
+  $service_name     = $chronos::params::service_name,
+  $service_provider = $chronos::params::service_provider,
+) inherits ::chronos::params {
+  validate_bool($service_manage)
+  validate_bool($service_enable)
+  validate_string($service_name)
 
-  $conf_dir     = $chronos::params::conf_dir
-  $http_port    = $chronos::http_port
-  $hostname     = $chronos::hostname
-  $master       = $chronos::master
-  $package_name = $chronos::package_name
-  $service_name = $chronos::service_name
-  $zk_hosts     = $chronos::zk_hosts
-
-  File {
-    ensure => file,
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0660',
+  if $service_provider {
+    validate_string($service_provider)
   }
 
-  service { $service_name:
-    ensure => running,
-    enable => true,
-  }
+  if $service_manage {
 
-  file { $conf_dir:
-    ensure  => directory,
-    mode    => '0770',
-    purge   => true,
-    recurse => true,
-  }
-
-  file { "${conf_dir}/http_port":
-    content => $http_port,
-    notify  => Service[$service_name],
-  }
-
-  if $chronos::hostname {
-    file { "${conf_dir}/hostname":
-      content => $hostname,
-      notify  => Service[$service_name],
+    if $service_enable {
+      $ensure_service = 'running'
+    } else {
+      $ensure_service = 'stopped'
     }
+
+    service { 'chronos' :
+      ensure     => $ensure_service,
+      name       => $service_name,
+      hasstatus  => true,
+      hasrestart => true,
+      enable     => $service_enable,
+      provider   => $service_provider,
+    }
+
   }
 
-  if $chronos::master {
-    file { "${conf_dir}/master":
-      content => $master,
-      notify  => Service[$service_name],
-    }
-  }
-
-  if $chronos::zk_hosts {
-    file { "${conf_dir}/zk_hosts":
-      content => $zk_hosts,
-      notify  => Service[$service_name],
-    }
-  }
 }
