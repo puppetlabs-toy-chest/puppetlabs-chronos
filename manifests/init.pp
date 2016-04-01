@@ -50,34 +50,34 @@ class chronos (
 ) inherits ::chronos::params {
 
   class { '::chronos::install':
-    package_name          => $package_name,
-    package_manage        => $package_manage,
-    package_ensure        => $package_ensure,
-    package_provider      => $package_provider,
+    package_name     => $package_name,
+    package_manage   => $package_manage,
+    package_ensure   => $package_ensure,
+    package_provider => $package_provider,
   }
 
   class { '::chronos::config':
-    zk_servers            => $zk_servers,
-    zk_chronos_servers    => $zk_chronos_servers,
-    zk_default_port       => $zk_default_port,
-    zk_mesos_path         => $zk_mesos_path,
+    zk_servers         => $zk_servers,
+    zk_chronos_servers => $zk_chronos_servers,
+    zk_default_port    => $zk_default_port,
+    zk_mesos_path      => $zk_mesos_path,
 
-    libprocess_ip         => $libprocess_ip,
+    libprocess_ip      => $libprocess_ip,
 
-    mesos_principal       => $mesos_principal,
-    mesos_secret          => $mesos_secret,
+    mesos_principal    => $mesos_principal,
+    mesos_secret       => $mesos_secret,
 
-    secret_file_path      => $secret_file_path,
+    secret_file_path   => $secret_file_path,
 
-    config_base_path      => $config_base_path,
-    config_dir_path       => $config_dir_path,
-    config_file_path      => $config_file_path,
-    config_file_mode      => $config_file_mode,
+    config_base_path   => $config_base_path,
+    config_dir_path    => $config_dir_path,
+    config_file_path   => $config_file_path,
+    config_file_mode   => $config_file_mode,
 
-    java_opts             => $java_opts,
-    java_home             => $java_home,
+    java_opts          => $java_opts,
+    java_home          => $java_home,
 
-    options               => $options,
+    options            => $options,
   }
 
   class { '::chronos::deps':
@@ -99,10 +99,10 @@ class chronos (
   }
 
   class { '::chronos::service':
-    service_name          => $service_name,
-    service_manage        => $service_manage,
-    service_enable        => $service_enable,
-    service_provider      => $service_provider,
+    service_name     => $service_name,
+    service_manage   => $service_manage,
+    service_enable   => $service_enable,
+    service_provider => $service_provider,
   }
 
   contain 'chronos::install'

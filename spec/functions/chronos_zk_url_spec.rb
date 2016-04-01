@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe 'chronos_zk_url', :type => :puppet_function do
+describe 'chronos_zk_url', type: :puppet_function do
   context 'interface' do
     it { is_expected.not_to eq(nil) }
-    it { is_expected.to run.with_params().and_raise_error(ArgumentError) }
+    it { is_expected.to run.with_params.and_raise_error(ArgumentError) }
     it { is_expected.to run.with_params(nil).and_raise_error(ArgumentError) }
     it { is_expected.to run.with_params(['one']).and_raise_error(ArgumentError) }
     it { is_expected.to run.with_params(nil, nil).and_raise_error(Puppet::ParseError) }

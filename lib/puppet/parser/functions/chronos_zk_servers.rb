@@ -1,9 +1,9 @@
 module Puppet::Parser::Functions
   newfunction(
-      :chronos_zk_servers,
-      :type => :rvalue,
-      :arity => -2,
-      :doc => 'Combine a list of Zookeeper servers with ports into an array'
+    :chronos_zk_servers,
+    type: :rvalue,
+    arity: -2,
+    doc: 'Combine a list of Zookeeper servers with ports into an array'
   ) do |args|
     servers = args[0]
     port = args[1] || '2181'

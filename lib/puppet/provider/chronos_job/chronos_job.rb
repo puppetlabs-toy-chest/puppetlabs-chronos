@@ -1,10 +1,10 @@
 Puppet::Type.type(:chronos_job).provide(:default) do
-  desc "Implements creating Chronos jobs through its REST api."
+  desc 'Implements creating Chronos jobs through its REST api.'
 
   # There's a possibility of this provider being loaded before Puppet has had
   # a chance to manage the 'httparty' and 'json' gems. Therefore, we confine
   # this provider to only work *if* both httparty and json can be required.
-  confine :feature => :httparty
+  confine feature: :httparty
 
   def initialize(*args)
     super
@@ -24,20 +24,18 @@ Puppet::Type.type(:chronos_job).provide(:default) do
     targets = []
 
     if resources
-      resources.each do |name, resource|
-        if value = resource[:host]
-          targets << value
-        end
+      resources.each do |_name, resource|
+        value = resource[:host]
+        targets << value if value
       end
     else
-      targets << self.default_target
+      targets << default_target
     end
 
     targets.uniq.compact
   end
 
   def self.instances(resources = nil)
-
     instances = []
 
     ltargets = targets(resources)
@@ -47,31 +45,32 @@ Puppet::Type.type(:chronos_job).provide(:default) do
 
       jobs.each do |job|
         job = {
-          :name                  => job['name'],
-          :command               => job['command'],
-          :arguments             => job['arguments'],
-          :uris                  => job['uris'],
-          :container             => job['container'],
-          :environment_variables => job['environmentVariables'],
-          :job_schedule          => job['schedule'],
-          :schedule_timezone     => job['scheduleTimeZone'],
-          :epsilon               => job['epsilon'],
-          :owner                 => job['owner'].split(','),
-          :async                 => job['async'],
-          :parents               => job['parents'],
-          :retries               => job['retries'],
-          :cpus                  => job['cpus'],
-          :disk                  => job['disk'],
-          :mem                   => job['mem'],
+          name: job['name'],
+          command: job['command'],
+          arguments: job['arguments'],
+          uris: job['uris'],
+          container: job['container'],
+          environment_variables: job['environmentVariables'],
+          job_schedule: job['schedule'],
+          schedule_timezone: job['scheduleTimeZone'],
+          epsilon: job['epsilon'],
+          owner: job['owner'].split(','),
+          async: job['async'],
+          parents: job['parents'],
+          retries: job['retries'],
+          cpus: job['cpus'],
+          disk: job['disk'],
+          mem: job['mem'],
         }
 
         unless job[:environment_variables].empty?
-          merged = {};job[:environment_variables].each { |x| merged.merge!({ x['name'] => x['value'] }) }
+          merged = {}
+          job[:environment_variables].each { |x| merged.merge!(x['name'] => x['value']) }
           job[:environment_variables] = merged
         end
 
-        job.delete_if do |k,v|
-          if (v.is_a?(Array) || v.is_a?(Hash))
+        job.delete_if do |_k, v|
+          if v.is_a?(Array) || v.is_a?(Hash)
             v.empty?
           else
             v.nil?
@@ -86,16 +85,14 @@ Puppet::Type.type(:chronos_job).provide(:default) do
 
   def self.prefetch(resources)
     instances(resources).each do |prov|
-      if res = resources[prov.name.to_s]
-        res.provider = prov
-      end
+      res = resources[prov.name.to_s]
+      next unless res
+      res.provider = prov
     end
   end
 
   def flush
-    if ! @property_hash.empty? && @property_hash[:ensure] != :absent
-      create
-    end
+    create if ! @property_hash.empty? && @property_hash[:ensure] != :absent
     @property_hash = resource.to_hash
   end
 
@@ -113,7 +110,6 @@ Puppet::Type.type(:chronos_job).provide(:default) do
       'environmentVariables' => resource[:environment_variables],
       'epsilon'              => resource[:epsilon],
       'async'                => resource[:async],
-      'parents'              => resource[:parents],
       'retries'              => resource[:retries],
       'schedule'             => resource[:job_schedule],
       'scheduleTimeZone'     => resource[:schedule_timezone],
@@ -121,12 +117,13 @@ Puppet::Type.type(:chronos_job).provide(:default) do
     }
 
     unless resource[:environment_variables].nil?
-      listed = [];resource[:environment_variables].each_pair { |k,v| listed << { 'name' => k, 'value' => v }}
+      listed = []
+      resource[:environment_variables].each_pair { |k, v| listed << { 'name' => k, 'value' => v } }
       job['environmentVariables'] = listed
     end
 
-    job.delete_if do |k,v|
-      if (v.is_a?(Array) || v.is_a?(Hash))
+    job.delete_if do |_k, v|
+      if v.is_a?(Array) || v.is_a?(Hash)
         v.empty?
       else
         v.nil?
@@ -134,13 +131,13 @@ Puppet::Type.type(:chronos_job).provide(:default) do
     end
 
     headers = {
-      "Content-Type" => "application/json"
+      'Content-Type' => 'application/json'
     }
 
     job_type_endpoint = resource[:parents].nil? ? 'scheduler/iso8601' : 'scheduler/dependency'
 
     begin
-      response = HTTParty.post("#{resource[:host]}/#{job_type_endpoint}", :body => job.to_json, :headers => headers)
+      HTTParty.post("#{resource[:host]}/#{job_type_endpoint}", body: job.to_json, headers: headers)
     rescue HTTParty::Error
       raise Puppet::Error, "Error while connecting to Chronos host #{resource[:host]}"
     rescue HTTParty::ResponseError => e
@@ -151,12 +148,12 @@ Puppet::Type.type(:chronos_job).provide(:default) do
   end
 
   def exists?
-    !(@property_hash[:ensure] == :absent or @property_hash.empty?)
+    !(@property_hash[:ensure] == :absent || @property_hash.empty?)
   end
 
   def destroy
     begin
-      response = HTTParty.delete("#{resource[:host]}/scheduler/job/#{@property_hash[:name]}")
+      HTTParty.delete("#{resource[:host]}/scheduler/job/#{@property_hash[:name]}")
     rescue HTTParty::Error
       raise Puppet::Error, "Error while connecting to Chronos host #{resource[:host]}"
     rescue HTTParty::ResponseError => e

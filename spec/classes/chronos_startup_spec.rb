@@ -1,35 +1,32 @@
 require 'spec_helper'
 
-describe 'chronos::startup', :type => :class do
+describe 'chronos::startup', type: :class do
   on_supported_os.each do |os, facts|
     context "on #{os}" do
-
       # rspec-puppet-facts does not include the 'puppetversion' fact anywhere
       # So we need to stub it out here.
       let(:facts) do
         facts.merge!(
-            {
-                :puppetversion => ENV['PUPPET_VERSION'] || '3.7.0'
-            }
+          puppetversion: ENV['PUPPET_VERSION'] || '3.7.0'
         )
       end
 
       context 'with default parameters and startup_manage and launcher_manage enabled' do
         let(:params) do
           {
-              :startup_manage => true,
-              :launcher_manage => true,
+            startup_manage: true,
+            launcher_manage: true,
           }
         end
 
         it { is_expected.to compile.with_all_deps }
 
         launcher_parameters = {
-            :ensure => 'present',
-            :owner => 'root',
-            :group => 'root',
-            :mode => '0755',
-            :path => '/usr/bin/chronos',
+          ensure: 'present',
+          owner: 'root',
+          group: 'root',
+          mode: '0755',
+          path: '/usr/bin/chronos',
         }
 
         it { is_expected.to contain_file('chronos_launcher_file').with(launcher_parameters) }
@@ -38,22 +35,22 @@ describe 'chronos::startup', :type => :class do
       context 'with custom parameters' do
         let(:params) do
           {
-              :startup_manage => true,
-              :launcher_manage => true,
-              :launcher_path => '/usr/local/bin/chronos',
-              :service_name => 'my-chronos',
-              :jar_file_path => false,
+            startup_manage: true,
+            launcher_manage: true,
+            launcher_path: '/usr/local/bin/chronos',
+            service_name: 'my-chronos',
+            jar_file_path: false,
           }
         end
 
         it { is_expected.to compile.with_all_deps }
 
         launcher_parameters = {
-            :ensure => 'present',
-            :owner => 'root',
-            :group => 'root',
-            :mode => '0755',
-            :path => '/usr/local/bin/chronos',
+          ensure: 'present',
+          owner: 'root',
+          group: 'root',
+          mode: '0755',
+          path: '/usr/local/bin/chronos',
         }
 
         it { is_expected.to contain_file('chronos_launcher_file').with(launcher_parameters) }
@@ -62,30 +59,29 @@ describe 'chronos::startup', :type => :class do
       context 'with launcher_manage disabled' do
         let(:params) do
           {
-              :launcher_manage => false,
+            launcher_manage: false,
           }
         end
 
         it { is_expected.to compile.with_all_deps }
 
         it { is_expected.not_to contain_file('chronos_launcher_file') }
-
       end
 
       context 'with Upstart system' do
         let(:params) do
           {
-              :startup_manage => true,
-              :startup_system => 'upstart',
-              :launcher_manage => true,
-              :launcher_path => '/usr/local/bin/chronos',
-              :service_name => 'my-chronos',
-              :jar_file_path => '/usr/share/java/my-chronos-runnable.jar',
-              :run_user => 'user',
+            startup_manage: true,
+            startup_system: 'upstart',
+            launcher_manage: true,
+            launcher_path: '/usr/local/bin/chronos',
+            service_name: 'my-chronos',
+            jar_file_path: '/usr/share/java/my-chronos-runnable.jar',
+            run_user: 'user',
           }
         end
 
-        upstart_content =<<-eof
+        upstart_content = <<-eof
 description "Chronos scheduler for Mesos"
 
 start on runlevel [2345]
@@ -99,19 +95,19 @@ setuid user
 exec /usr/local/bin/chronos --jar '/usr/share/java/my-chronos-runnable.jar'
         eof
         upstart_parameters = {
-            :ensure => 'present',
-            :owner => 'root',
-            :group => 'root',
-            :mode => '0644',
-            :content => upstart_content,
+          ensure: 'present',
+          owner: 'root',
+          group: 'root',
+          mode: '0644',
+          content: upstart_content,
         }
 
         it { is_expected.to contain_file('chronos_upstart_file').with(upstart_parameters) }
 
         init_parameters = {
-            :ensure => 'symlink',
-            :target => '/lib/init/upstart-job',
-            :path => '/etc/init.d/my-chronos',
+          ensure: 'symlink',
+          target: '/lib/init/upstart-job',
+          path: '/etc/init.d/my-chronos',
         }
 
         it { is_expected.to compile.with_all_deps }
@@ -124,17 +120,17 @@ exec /usr/local/bin/chronos --jar '/usr/share/java/my-chronos-runnable.jar'
       context 'with Systemd system' do
         let(:params) do
           {
-              :startup_manage => true,
-              :startup_system => 'systemd',
-              :launcher_manage => true,
-              :launcher_path => '/usr/local/bin/chronos',
-              :service_name => 'my-chronos',
-              :jar_file_path => '/usr/share/java/my-chronos-runnable.jar',
-              :run_user => 'user',
+            startup_manage: true,
+            startup_system: 'systemd',
+            launcher_manage: true,
+            launcher_path: '/usr/local/bin/chronos',
+            service_name: 'my-chronos',
+            jar_file_path: '/usr/share/java/my-chronos-runnable.jar',
+            run_user: 'user',
           }
         end
 
-        systemd_content =<<-eof
+        systemd_content = <<-eof
 [Unit]
 Description=Chronos
 After=network.target
@@ -152,11 +148,11 @@ User=user
 WantedBy=multi-user.target
         eof
         upstart_parameters = {
-            :ensure => 'present',
-            :owner => 'root',
-            :group => 'root',
-            :mode => '0644',
-            :content => systemd_content,
+          ensure: 'present',
+          owner: 'root',
+          group: 'root',
+          mode: '0644',
+          content: systemd_content,
         }
 
         it { is_expected.to compile.with_all_deps }
@@ -165,8 +161,6 @@ WantedBy=multi-user.target
 
         it { is_expected.to contain_file('chronos_systemd_unit').with(upstart_parameters) }
       end
-
     end
   end
-
 end
