@@ -65,8 +65,8 @@ class chronos::config (
   }
 
   file { 'chronos_config_base' :
-    ensure  => 'directory',
-    path    => $config_base_path,
+    ensure => 'directory',
+    path   => $config_base_path,
   }
 
   file { 'chronos_config_dir':

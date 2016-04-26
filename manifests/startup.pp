@@ -31,7 +31,7 @@ class chronos::startup (
 
     if $startup_system == 'upstart' {
 
-      class { 'chronos::startup::upstart' :
+      class { '::chronos::startup::upstart' :
         launcher_path => $launcher_path,
         jar_file_path => $jar_file_path,
         service_name  => $service_name,
@@ -43,7 +43,7 @@ class chronos::startup (
 
     } elsif $startup_system == 'systemd' {
 
-      class { 'chronos::startup::systemd' :
+      class { '::chronos::startup::systemd' :
         launcher_path => $launcher_path,
         jar_file_path => $jar_file_path,
         service_name  => $service_name,
